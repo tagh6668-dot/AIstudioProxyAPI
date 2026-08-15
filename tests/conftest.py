@@ -3,6 +3,31 @@ import sys
 import types
 from unittest.mock import AsyncMock, MagicMock, patch
 
+# Safely mock optional heavy/UI packages if unavailable in runtime environment (e.g., Termux)
+for _mod in [
+    "playwright",
+    "playwright.async_api",
+    "tkinter",
+    "tkinter.ttk",
+    "tkinter.messagebox",
+]:
+    if _mod not in sys.modules:
+        try:
+            __import__(_mod)
+        except ImportError:
+            sys.modules[_mod] = MagicMock()
+
+if "customtkinter" not in sys.modules:
+    try:
+        __import__("customtkinter")
+    except ImportError:
+        ctk_mock = MagicMock()
+        DummyBase = type("DummyBase", (), {})
+        ctk_mock.CTkFrame = DummyBase
+        ctk_mock.CTkScrollableFrame = DummyBase
+        ctk_mock.CTkToplevel = DummyBase
+        sys.modules["customtkinter"] = ctk_mock
+
 import pytest
 
 # Note: Session-level cleanup hooks removed as they cause recursion issues on Windows
