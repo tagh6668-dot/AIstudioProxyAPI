@@ -37,7 +37,7 @@ DEFAULT_CONFIG = {
     "proxy_enabled": False,
     "last_account": "",
     "appearance_mode": "dark",  # "dark", "light", or "system"
-    "minimize_to_tray": True,
+    "minimize_to_tray": False,
     "language": "en",
 }
 

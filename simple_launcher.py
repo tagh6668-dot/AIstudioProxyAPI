@@ -51,7 +51,7 @@ DEFAULT_CONFIG = {
     "proxy_enabled": False,
     "last_account": "",
     "dark_mode": True,
-    "minimize_to_tray": True,
+    "minimize_to_tray": False,
 }
 
 # Modern Color Palette (Dark Theme)
@@ -312,43 +312,8 @@ class TrayIcon:
             return False
 
     def _try_pystray(self) -> bool:
-        """Try to create tray with pystray"""
-        try:
-            import pystray
-            from PIL import Image, ImageDraw
-
-            # Create a simple icon
-            size = 64
-            image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-            draw = ImageDraw.Draw(image)
-            draw.ellipse([4, 4, size - 4, size - 4], fill=COLORS["accent"])
-            draw.ellipse([16, 16, size - 16, size - 16], fill=COLORS["bg_dark"])
-
-            # Create menu
-            menu = pystray.Menu(
-                pystray.MenuItem("📂 Show Window", self._pystray_show),
-                pystray.Menu.SEPARATOR,
-                pystray.MenuItem("▶️ Start", self._pystray_start),
-                pystray.MenuItem("⏹️ Stop", self._pystray_stop),
-                pystray.Menu.SEPARATOR,
-                pystray.MenuItem("🔍 API Test", self._pystray_test),
-                pystray.Menu.SEPARATOR,
-                pystray.MenuItem("❌ Exit", self._pystray_quit),
-            )
-
-            self.indicator = pystray.Icon(
-                "AI Studio Proxy", image, "AI Studio Proxy", menu
-            )
-            threading.Thread(target=self.indicator.run, daemon=True).start()
-
-            self.supported = True
-            self.backend = "pystray"
-            print("✅ pystray tray started (X11)")
-            return True
-
-        except Exception as e:
-            print(f"⚠️ pystray could not be started: {e}")
-            return False
+        """Try to create tray with pystray (disabled to prevent floating overlay icons)"""
+        return False
 
     def _pystray_show(self, icon=None, item=None):
         self.app.root.after(0, self.app._show_window)

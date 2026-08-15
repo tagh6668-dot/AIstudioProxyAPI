@@ -113,52 +113,8 @@ class TrayIcon:
             return False
 
     def _try_pystray(self) -> bool:
-        """Try to create tray with pystray"""
-        try:
-            import pystray
-            from PIL import Image, ImageDraw
-
-            # Get current colors (as hex strings)
-            accent_hex = get_current_color("accent")
-            bg_hex = get_current_color("bg_dark")
-
-            # Create a simple icon
-            size = 64
-            image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-            draw = ImageDraw.Draw(image)
-
-            # Parse hex colors to RGB tuples
-            accent_rgb = tuple(
-                int(accent_hex.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4)
-            )
-            bg_rgb = tuple(int(bg_hex.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4))
-            draw.ellipse([4, 4, size - 4, size - 4], fill=accent_rgb)
-            draw.ellipse([16, 16, size - 16, size - 16], fill=bg_rgb)
-
-            # Create menu
-            menu = pystray.Menu(
-                pystray.MenuItem("📂 Show Window", self._pystray_show),
-                pystray.Menu.SEPARATOR,
-                pystray.MenuItem("▶️ Start", self._pystray_start),
-                pystray.MenuItem("⏹️ Stop", self._pystray_stop),
-                pystray.Menu.SEPARATOR,
-                pystray.MenuItem("🔍 API Test", self._pystray_test),
-                pystray.Menu.SEPARATOR,
-                pystray.MenuItem("❌ Exit", self._pystray_quit),
-            )
-
-            self.indicator = pystray.Icon(
-                "AI Studio Proxy", image, "AI Studio Proxy", menu
-            )
-            threading.Thread(target=self.indicator.run, daemon=True).start()
-
-            self.supported = True
-            self.backend = "pystray"
-            return True
-
-        except Exception:
-            # Silently fail - pystray not available
-            return False
+        """Try to create tray with pystray (disabled to prevent floating overlay icons)"""
+        return False
 
     def _pystray_show(self, icon=None, item=None):
         self.app.root.after(0, self.app._show_window)
